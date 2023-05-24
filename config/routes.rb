@@ -1,4 +1,10 @@
 Rails.application.routes.draw do
+  
+  #Homepage/List of Users:
+  get("/", { :controller => "user", :action => "index" })
+  
+  
+  
   # Routes for the Comment resource:
 
   # CREATE
