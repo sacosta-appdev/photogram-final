@@ -24,8 +24,7 @@ class PhotosController < ApplicationController
     the_photo.owner_id = params.fetch("query_owner_id")
     the_photo.location = params.fetch("query_location")
     the_photo.comments_count = params.fetch("query_comments_count")
-    the_photo.likes_count = params.fetch("query_likes_count")
-    the_photo.likes_count = params.fetch("query_likes_count")
+    the_photo.photo_likes_count = params.fetch("query_photo_likes_count")
     the_photo.comments_count = params.fetch("query_comments_count")
 
     if the_photo.valid?
@@ -45,8 +44,7 @@ class PhotosController < ApplicationController
     the_photo.owner_id = params.fetch("query_owner_id")
     the_photo.location = params.fetch("query_location")
     the_photo.comments_count = params.fetch("query_comments_count")
-    the_photo.likes_count = params.fetch("query_likes_count")
-    the_photo.likes_count = params.fetch("query_likes_count")
+    the_photo.photo_likes_count = params.fetch("query_photo_likes_count")
     the_photo.comments_count = params.fetch("query_comments_count")
 
     if the_photo.valid?
