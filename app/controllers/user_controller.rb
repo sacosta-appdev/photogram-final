@@ -22,4 +22,13 @@ class UserController < ApplicationController
 
   end
 
+  def user_details
+
+    @username = params.fetch("username")
+    @user = User.where({ :username => @username })[0]
+
+    render({ :template => "user/user_details.html.erb"})
+
+  end
+
 end
