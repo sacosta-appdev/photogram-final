@@ -1,27 +1,162 @@
 <h1><%= @username %></h1>
 
-<dl>
-  <dt>Private</dt>
-  <dd><%= @user.private %></dd>
+<p>
+  <dl>
+    <dt>Private</dt>
+    <dd><%= @user.private %></dd>
 
-  <dt>Followers</dt>
-  <dd><%= @user.received_follow_requests_count %></dd>
+    <dt>Followers</dt>
+    <dd>
+      <%= @user.received_follow_requests_count %>
+    
+      <% if @user.id == session.fetch(:user_id) %>
+        <h4> Pending follow requests</h4>
 
-  <dt>Following</dt>
-  <dd><%= @user.sent_follow_requests_count %></dd>
-</dl>
+        <ul>
+          <% @user_pending_requests.each do |each_request| %>
 
-<ul>
-  <li>
-    <a href="/users/<%= @user.username %>">Profile</a>
-  </li>
-  <li>
-    <a href="/users/<%= @user.username %>/liked_photos">Like photos</a>
-  </li>
-  <li>
-    <a href="/users/<%= @user.username %>/feed">Feed</a>
-  </li>
-  <li>
-    <a href="/users/<%= @user.username %>/discover">Discover</a>
-  </li>
-</ul>
+            <li>
+              <%= each_request.sender.username %>
+
+              <form action="/modify_follow_request/<%= each_request.id %>" method="post">
+                <input name="query_status" value="accepted" type="hidden">
+                <button>Accept</button>
+              </form>
+
+              <form action="/modify_follow_request/<%= each_request.id %>" method="post">
+                <input name="query_status" value="rejected" type="hidden">
+                <button>Reject</button>
+              </form>
+            </li>
+
+          <% end %>
+        </ul>
+
+      <% end %>
+       
+    </dd>
+
+        <% if session.fetch(:user_id) == nil %>
+          <dd></dd>
+        <% else %>
+          <dd>
+            <% if session.fetch(:user_id) != @user.id && @user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) }).empty? #there are not pending request  %>
+
+            <form action="/insert_follow_request" method="post">
+
+              <input type="hidden" name="query_sender_id" value="<%= session.fetch(:user_id) %>">
+
+              <input type="hidden" name="query_recipient_id" value="<%= @user.id %>">
+
+              <% if @user.private == true %>
+                <input type="hidden" name="query_status" value="pending">
+              <% else %>
+                <input type="hidden" name="query_status" value="accepted">
+              <% end %>
+
+              <button>
+                Follow
+              </button>
+
+            </form>
+
+            <% elsif session.fetch(:user_id) != @user.id && @user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) }) != nil && @user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) })[0].status == "pending" #there is a pending request %>
+            Request sent. <a href="/">Cancel</a>
+
+            <% elsif session.fetch(:user_id) != @user.id && @user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) }) != nil && @user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) })[0].status == "accepted" #the request has been accepted %>
+            <a href="/users/<%= @user.username %>">Unfollow</a>
+
+            <% end %>
+          </dd>
+        <% end %>
+
+    <dt>Following</dt>
+    <dd><%= @user.sent_follow_requests_count %></dd>
+
+    <% if @user.id == session.fetch(:user_id) %>
+      <dt>Edit user</dt>
+      <dd>
+
+        <form action="/modify_user" method="post">
+
+          <label for="username">Username</label>
+          <input id="username" name="query_username" value="<%= @user.username %>">
+
+          <label for="private">Private?</label>
+          <input id="private" name="query_private" type="checkbox">
+
+          <button>
+            Update user
+          </button>
+
+        </form>
+      </dd>
+    <% end %>
+  </dl>
+</p>
+
+<p>
+  <ul>
+    <li>
+      <a href="/users/<%= @user.username %>">Profile</a>
+    </li>
+    <li>
+      <a href="/users/<%= @user.username %>/liked_photos">Like photos</a>
+    </li>
+    <li>
+      <a href="/users/<%= @user.username %>/feed">Feed</a>
+    </li>
+    <li>
+      <a href="/users/<%= @user.username %>/discover">Discover</a>
+    </li>
+  </ul>
+</p>
+
+<p>
+  <h2>Own photos (<%= @user.own_photos_count %>)</h2>
+</p>
+
+<div>
+  <table border="2">
+
+    <tr>
+      <th>Image</th>
+      <th>Owner</th>
+      <th>Caption</th>
+      <th>Posted</th>
+      <th>Likes</th>
+      <th></th>
+    </tr>
+
+    <% @user.own_photos.each do |each_photo| %>
+      <tr>
+        <td>
+          <img src="<%= each_photo.image %>">
+        </td>
+        <td>
+          <%= each_photo.owner.username %>
+        </td>
+        <td>
+          <%= each_photo.caption %>
+        </td>
+        <td>
+          <%= time_ago_in_words(each_photo.created_at) %> ago
+        </td>
+        <td>
+          <%= each_photo.likes_count %>
+        </td>
+
+        <% if session.fetch(:user_id) == nil %>
+          <td>
+            <a href="/user_sign_in">Show details</a>
+          </td>
+        <% else %>
+          <td>
+            <a href="/photos/<%= each_photo.id %>">Show details</a>
+          </td>
+        <% end %>
+
+      </tr>
+    <% end %>
+
+</div>

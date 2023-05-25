@@ -26,6 +26,7 @@ class UserController < ApplicationController
 
     @username = params.fetch("username")
     @user = User.where({ :username => @username })[0]
+    @user_pending_requests = @user.received_follow_requests.where({ :status => "pending"})
 
     render({ :template => "user/user_details.html.erb"})
 
