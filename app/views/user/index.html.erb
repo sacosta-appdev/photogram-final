@@ -15,13 +15,52 @@
 
     <% @display_user_list.each do |each_user| %>
       <tr>
+        <%#= each_user.received_follow_requests %>
         <td>
           <%= each_user.username %>
         </td>
         <td>
-          <%= each_user.private %>
+          <% if each_user.private == true %>
+          Yes
+          <% else %>
+          No
+          <% end %>
         </td>
-        <td></td>
+
+        <% if session.fetch(:user_id) == nil%>
+          <td></td>
+        <% else %>
+          <td>
+            <% if each_user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) }).empty? #there are not pending request  %>
+
+            <form action="/insert_follow_request" method="post">
+
+              <input type="hidden" name="query_sender_id" value="<%= session.fetch(:user_id) %>">
+
+              <input type="hidden" name="query_recipient_id" value="<%= each_user.id %>">
+
+              <% if each_user.private == true %>
+                <input type="hidden" name="query_status" value="pending">
+              <% else %>
+                <input type="hidden" name="query_status" value="accepted">
+              <% end %>
+
+              <button>
+                Follow
+              </button>
+
+            </form>
+
+            <% elsif each_user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) }) != nil && each_user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) })[0].status == "pending" #there is a pending request %>
+            Request sent. <a href="/">Cancel</a>
+
+            <% elsif each_user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) }) != nil && each_user.received_follow_requests.where({ :sender_id => session.fetch(:user_id) })[0].status == "accepted" #the request has been accepted %>
+            <a href="/users/<%= each_user.username %>">Unfollow</a>
+
+            <% end %>
+          </td>
+        <% end %>
+
         <td>
           <a href="/<%= each_user.username %>">Show details</a>
         </td>

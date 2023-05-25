@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   
   #Homepage/List of Users:
   get("/", { :controller => "user", :action => "index" })
+  get("/users", { :controller => "user", :action => "index" })
   
   
   

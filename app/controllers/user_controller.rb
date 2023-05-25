@@ -16,7 +16,7 @@ class UserController < ApplicationController
 
   def index
     user_list = User.all
-    @display_user_list = user_list.order({ :user_name => :asc })
+    @display_user_list = user_list.order({ :username => :asc })
 
     render({ :template => "user/index.html.erb" })
 
