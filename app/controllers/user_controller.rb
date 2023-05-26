@@ -32,4 +32,20 @@ class UserController < ApplicationController
 
   end
 
+  def user_feed
+
+    @username = params.fetch("username")
+    @user = User.where({ :username => @username })[0]
+    follow_requests = FollowRequest.where({ :recipient_id => @user.id })
+    @followers = follow_requests.where({ :status => "accepted" })
+
+    sent_requests = FollowRequest.where({ :sender_id => @user.id })
+    @following = sent_requests.where({ :status => "accepted" })
+
+
+
+    render({ :template => "/user/user_feed.html.erb" })
+
+  end
+
 end
