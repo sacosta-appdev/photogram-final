@@ -24,6 +24,8 @@ class PhotosController < ApplicationController
 
     @the_photo = matching_photos.at(0)
 
+    @the_comments = @the_photo.comments
+
     render({ :template => "photos/show.html.erb" })
   end
 
@@ -47,11 +49,7 @@ class PhotosController < ApplicationController
 
     the_photo.caption = params.fetch("query_caption")
     the_photo.image = params.fetch("query_image")
-    the_photo.owner_id = params.fetch("query_owner_id")
-    the_photo.location = params.fetch("query_location")
-    the_photo.comments_count = params.fetch("query_comments_count")
-    the_photo.photo_likes_count = params.fetch("query_photo_likes_count")
-    the_photo.comments_count = params.fetch("query_comments_count")
+    the_photo.owner_id = params.fetch("query_owner")
 
     if the_photo.valid?
       the_photo.save
