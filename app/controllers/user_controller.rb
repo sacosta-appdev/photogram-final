@@ -28,7 +28,15 @@ class UserController < ApplicationController
     @user = User.where({ :username => @username })[0]
     @user_pending_requests = @user.received_follow_requests.where({ :status => "pending"})
 
-    render({ :template => "user/user_details.html.erb"})
+    if session.fetch(:user_id) == nil
+      redirect_to("/user_sign_in", { :alert => "You have to sign in first." })
+    else
+      if @user.private == true
+        redirect_to("/", { :alert => "You're not authorized for that." })
+      else 
+        render({ :template => "user/user_details.html.erb"})
+      end
+    end
 
   end
 

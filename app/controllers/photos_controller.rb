@@ -26,7 +26,12 @@ class PhotosController < ApplicationController
 
     @the_comments = @the_photo.comments
 
-    render({ :template => "photos/show.html.erb" })
+    if session.fetch(:user_id) == nil
+      redirect_to("/user_sign_in", { :alert => "You have to sign in first." })
+    else
+      render({ :template => "photos/show.html.erb" })
+    end
+    
   end
 
   def create
