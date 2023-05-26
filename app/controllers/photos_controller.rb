@@ -1,8 +1,18 @@
 class PhotosController < ApplicationController
+
   def index
     matching_photos = Photo.all
+    public_users = User.where({ :private => "false" })
 
-    @list_of_photos = matching_photos.order({ :created_at => :desc })
+    @list_of_photos = matching_photos.where({ :owner_id => public_users }).order({ :created_at => :desc })
+
+    # @list_of_public_photos = Array.new
+
+    # @list_of_photos.each do |each_photo|
+    #   if each_photo.owner.private == false
+    #     @list_of_public_photos = @list_of_public_photos.push(each_photo)
+    #   end
+    # end
 
     render({ :template => "photos/index.html.erb" })
   end
@@ -21,11 +31,7 @@ class PhotosController < ApplicationController
     the_photo = Photo.new
     the_photo.caption = params.fetch("query_caption")
     the_photo.image = params.fetch("query_image")
-    the_photo.owner_id = params.fetch("query_owner_id")
-    the_photo.location = params.fetch("query_location")
-    the_photo.comments_count = params.fetch("query_comments_count")
-    the_photo.photo_likes_count = params.fetch("query_photo_likes_count")
-    the_photo.comments_count = params.fetch("query_comments_count")
+    the_photo.owner_id = params.fetch("query_owner")
 
     if the_photo.valid?
       the_photo.save
